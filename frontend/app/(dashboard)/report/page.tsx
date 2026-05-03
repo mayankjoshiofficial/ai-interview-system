@@ -1,6 +1,6 @@
 // frontend/app/(dashboard)/report/page.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { interviewAPI } from '@/lib/api';
 import Navbar from '@/components/Navbar';
@@ -8,7 +8,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-export default function ReportPage() {
+function ReportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const interviewId = searchParams.get('id');
@@ -57,15 +57,11 @@ export default function ReportPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Interview Report 📊</h1>
           <p className="text-gray-500 mt-2">Role: {report?.job_role}</p>
         </div>
-
-        {/* Overall Score */}
         <Card className="mb-6 text-center">
           <div className="text-6xl font-bold text-blue-600 mb-2">
             {report?.overall_score || report?.average_score || '—'}/10
@@ -75,8 +71,6 @@ export default function ReportPage() {
             {report?.answered_questions} questions answered
           </div>
         </Card>
-
-        {/* Score Chart */}
         {chartData?.length > 0 && (
           <Card title="📈 Score Per Question" className="mb-6">
             <ResponsiveContainer width="100%" height={250}>
@@ -90,8 +84,6 @@ export default function ReportPage() {
             </ResponsiveContainer>
           </Card>
         )}
-
-        {/* Question Breakdown */}
         <Card title="📝 Question Breakdown" className="mb-6">
           <div className="space-y-6">
             {report?.questions?.map((q: any, index: number) => (
@@ -104,21 +96,18 @@ export default function ReportPage() {
                     </span>
                   )}
                 </div>
-
                 {q.transcribed_text && (
                   <div className="bg-gray-50 rounded-lg p-3 mb-3">
                     <p className="text-gray-500 text-xs mb-1">Your Answer:</p>
                     <p className="text-gray-700 text-sm">{q.transcribed_text}</p>
                   </div>
                 )}
-
                 {q.ai_feedback && (
                   <div className="bg-blue-50 rounded-lg p-3 mb-3">
                     <p className="text-blue-500 text-xs mb-1">AI Feedback:</p>
                     <p className="text-gray-700 text-sm">{q.ai_feedback}</p>
                   </div>
                 )}
-
                 {q.filler_words_detected?.length > 0 && (
                   <div className="bg-yellow-50 rounded-lg p-3">
                     <p className="text-yellow-600 text-xs mb-1">⚠️ Filler Words:</p>
@@ -129,17 +118,25 @@ export default function ReportPage() {
             ))}
           </div>
         </Card>
-
-        {/* Actions */}
         <div className="flex gap-4">
-          <Button onClick={() => router.push('/dashboard')}>
-            ← Back to Dashboard
-          </Button>
+          <Button onClick={() => router.push('/dashboard')}>← Back to Dashboard</Button>
           <Button onClick={() => router.push('/interview/setup')} variant="success">
             Start New Interview
           </Button>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500 text-xl">Loading...</div>
+      </div>
+    }>
+      <ReportContent />
+    </Suspense>
   );
 }
