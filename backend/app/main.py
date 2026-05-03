@@ -22,7 +22,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://ai-interview-system-xxxx.vercel.app",  # Replace with your real Vercel URL
+        "https://ai-interview-system-chi.vercel.app",
+        "https://ai-interview-system-88tzes79r-mayankjoshiofficials-projects.vercel.app",
         "https://*.vercel.app",
     ],
     allow_credentials=True,
