@@ -90,7 +90,7 @@ export default function RegisterPage() {
           </div>
 
           <Button type="submit" loading={loading} className="w-full py-3 text-lg">
-            Create Account
+            {loading ? 'Connecting to server...' : 'Create Account'}
           </Button>
         </form>
 
